@@ -33,6 +33,19 @@
   </a>
 </h4>
 
+This generator is a `NodeJS` module acting as a standalone `Generate` generator or as a `Generate` plugin, written in `ESNext` (Futur-proff `Javascript`, ie. `EcmaScript 2018+`).
+
+It allows to generate a complete project with a working `NodeJS REST API` server based on the `KoaJS` framework, ad compliant with the `Open API Specification` (aka Swagger Spec).
+
+The source code is compliant with the `StandardJS Code Style`.
+
+See:
+
+* [Generate](https://generate.github.io/generate/) ([Github](https://github.com/generate/generate))
+* [KoaJS](https://koajs.com) ([Github](https://github.com/koajs/koa))
+* [OpenAPI Spec](https://www.openapis.org) ([Github](https://github.com/OAI/OpenAPI-Specification))
+* [StandardJS](https://standardjs.com/) ([Github](https://github.com/standard/standard))
+
 ## Installation
 
 ### Global install to use the generator as a standarlone CLI (recommanded)
@@ -66,7 +79,7 @@ $ npm install --save generate-swap-rest-api
 ### As a standalone generator (recommanded)
 
 ```sh
-$ generate-swap-rest-api
+$ gen swap-rest-api
 ```
 
 Should **@TODO: describe generator default action**
@@ -229,7 +242,7 @@ $ yarn pipeline:test
 | `yarn pipeline:build:lib` | Run the required jobs to build the docs, then build the docs |
 | `yarn pipeline:build:docs` | **[TODO]** Run the required jobs to build the docs, then build the docs |
 | `yarn release` | An alias to `yarn release:patch` |
-| `yarn release:prerelease` | Release and publish a new semver version (x.y.z-rc+1)|
+| `yarn release:prerelease` | Release and publish a new semver version (`x.y.z-rc+1`)|
 | `yarn release:patch` | Release and publish a new patch semver version (`x.y.z+1`)|
 | `yarn release:minor` | Release and publish a new minor semver version (`x.y+1.z=0`)|
 | `yarn release:major` | Release and publish a new major semver version (`x+1.y=0.z=0`)|
