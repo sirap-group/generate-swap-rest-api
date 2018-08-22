@@ -2,16 +2,10 @@
 
 # CUSTOM VARS: HOST_DB_DATA_DIR (default: "${HOME}/devbox-mongodb-data-volume")
 
-IMAGE_FROM="docker.sirap.fr/swap/devbox/api:latest"
-IMAGE_NAME="devbox-tereo-api"
+IMAGE_FROM="node:latest"
+IMAGE_NAME="devbox-generate-swap-rest-api"
 IMAGE_TAG="latest"
 CONTAINER_NAME="${IMAGE_NAME}"
-DEFAULT_HOST_DB_DATA_DIR="${HOME}/devbox-mongodb-data-volume"
-
-if [[ -z "${HOST_DB_DATA_DIR}" ]]; then
-  HOST_DB_DATA_DIR="${DEFAULT_HOST_DB_DATA_DIR}"
-fi
-mkdir -p "${HOST_DB_DATA_DIR}"
 
 while getopts 'hr' flag; do
   case "${flag}" in
@@ -27,36 +21,65 @@ if [[ -z $1 || $1 == "help" || $helpCommand == "true" ]]; then
 
 Available commands:
 
-build               build the swapd container (rebuild it when upgraded)
-              ./swapd build
+build         build the swapd container (rebuild it when upgraded)
 
-start               start the swapd container (start it once to use it)
-              ./swapd start
+              Usage:
+                  ./swapd build
 
-status              display the daemon status (use it to know if the daemon is running for example)
-              ./swapd status
+start         start the swapd container (start it once to use it)
 
-stop                stop the swapd container (stop it when you are done with development)
-              ./swapd stop
+              Usage:
+                  ./swapd start
 
-exec                execute a non-interactive command with an arbitrary number of arguments.
-              ./swapd exec [-r] <exec_command> [<command args>...]
+status        display the daemon status (use it to know if the daemon is running for example)
 
-  Options
-    -r              start the bash session as root (use it to do admin tasks like installing new software)
+              Usage:
+                  ./swapd status
 
-bash                start a bash session (start as many session as you need), or pass an additionnal command with an arbitrary number of arguments to execute that command in a subprocess of the new bash session.
-              ./swapd bash [-r] [<exec_command> [<command args>...]]
+stop          stop the swapd container (stop it when you are done with development)
 
-  Options
-    -r              start the bash session as root (use it to do admin tasks like installing new software)
+              Usage:
+                  ./swapd stop
 
-ungit                start the ungit server listenning on port 8448
-              ./swapd ungit
+exec          execute a non-interactive command with an arbitrary number of arguments.
+
+              Usage:
+                  ./swapd exec [-r] <exec_command> [<command args>...]
+
+              Options:
+              -r          start the bash session as root (use it to do admin
+                          tasks like installing new software)
+
+bash          start a bash session (start as many session as you need),
+              or pass an additionnal command with an arbitrary number of
+              arguments to execute that command in a subprocess of the
+              new bash session.
+
+              Usage:
+                  ./swapd bash [-r] [<exec_command> [<command args>...]]
+
+              Options:
+              -r          start the bash session as root (use it to do admin tasks like
+                          installing new software)
+
+ungit         start the ungit server listenning on port 8448
+
+              Usage:
+                  ./swapd ungit
+
+:start        run 'yarn start' inside the devbox container
+
+:debug        run 'yarn debug' inside the devbox container
+
+:dev          run 'yarn dev' inside the devbox container
+
+:serve        run 'yarn serve' inside the devbox container
+
+:build        run 'yarn build' inside the devbox container
 "
   exit 0
 
-elif [[ $1 == "build-devbox" ]]; then
+elif [[ $1 == "build" ]]; then
   docker build \
     -t ${IMAGE_NAME}:${IMAGE_TAG} \
     --build-arg username=$(echo $USERNAME) \
@@ -66,11 +89,7 @@ elif [[ $1 == "build-devbox" ]]; then
     .
 
 elif [[ $1 == "start" ]]; then
-  docker run -d --rm \
-    --name tereo-mongo \
-    --volume "${HOST_DB_DATA_DIR}:/home/${USERNAME}/db_data" \
-    mongo:3.6 \
-  && docker run --detach -t --rm \
+  docker run --detach -t --rm \
     --name "${CONTAINER_NAME}" \
     --publish 9000:9000 \
     --publish 3000:8100 \
@@ -80,11 +99,8 @@ elif [[ $1 == "start" ]]; then
     --publish 53703:53703 \
     --volume "/home/${USERNAME}/.ssh:/home/${USERNAME}/.ssh" \
     --volume "$(pwd):/home/${USERNAME}/app" \
-    --link tereo-mongo:mongo \
     "${IMAGE_NAME}:${IMAGE_TAG}" \
-  && echo "${CONTAINER_NAME} and tereo-mongo has started successfully." \
-  && echo "DB data dir is set to ${HOST_DB_DATA_DIR}"
-
+  && echo "${CONTAINER_NAME} has started successfully."
 
 elif [[ $1 == "bash" ]]; then
   shift
@@ -162,7 +178,7 @@ elif [[ $1 == "status" ]]; then
 
 
 elif [[ $1 == "stop" ]]; then
-  docker stop ${CONTAINER_NAME} tereo-mongo || echo "Skipping."
+  docker stop ${CONTAINER_NAME} || echo "Skipping."
 
 elif [[ $1 == "update" ]]; then
   ./swapd stop \
@@ -173,23 +189,20 @@ elif [[ $1 == "update" ]]; then
 elif [[ $1 == "ungit" ]]; then
   docker exec -du 1000 ${CONTAINER_NAME} ungit
 
-elif [[ $1 == "start" ]]; then
+elif [[ $1 == ":start" ]]; then
   docker exec -itu 1000 ${CONTAINER_NAME} yarn start
 
-elif [[ $1 == "debug" ]]; then
+elif [[ $1 == ":debug" ]]; then
   docker exec -itu 1000 ${CONTAINER_NAME} yarn debug
 
-elif [[ $1 == "dev" ]]; then
+elif [[ $1 == ":dev" ]]; then
   docker exec -itu 1000 ${CONTAINER_NAME} yarn dev
 
-elif [[ $1 == "serve" ]]; then
+elif [[ $1 == ":serve" ]]; then
   docker exec -itu 1000 ${CONTAINER_NAME} yarn serve
 
-elif [[ $1 == "build" ]]; then
+elif [[ $1 == ":build" ]]; then
   docker exec -itu 1000 ${CONTAINER_NAME} yarn build
-
-elif [[ $1 == "mongo" ]]; then
-  docker run -it --link tereo-mongo:mongo --name tereo-mongoshell --rm mongo:3.6 sh -c 'exec mongo "$MONGO_PORT_27017_TCP_ADDR:$MONGO_PORT_27017_TCP_PORT/tereo-dev"'
 
 else
   echo "ERROR: \"$1\": invalid subcomand"
