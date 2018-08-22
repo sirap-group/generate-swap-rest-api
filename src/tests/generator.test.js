@@ -149,6 +149,8 @@ describe('generate-swap-rest-api', function () {
     // Set manually required values for template rendering without having to prompt the user
     app.data('foo', 'bar')
     app.data('foobar', 'baz')
+    app.data('issues', '[issues]')
+    app.data('namespace', '[namespace]')
   }
 })
 
