@@ -143,5 +143,5 @@ export default function (app) {
    * @name default
    * @api public
    */
-  app.task('default', ['main'])
+  app.task('default', ['project'])
 }
