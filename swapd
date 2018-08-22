@@ -1,0 +1,196 @@
+#!/usr/bin/env bash
+
+# CUSTOM VARS: HOST_DB_DATA_DIR (default: "${HOME}/devbox-mongodb-data-volume")
+
+IMAGE_FROM="docker.sirap.fr/swap/devbox/api:latest"
+IMAGE_NAME="devbox-tereo-api"
+IMAGE_TAG="latest"
+CONTAINER_NAME="${IMAGE_NAME}"
+DEFAULT_HOST_DB_DATA_DIR="${HOME}/devbox-mongodb-data-volume"
+
+if [[ -z "${HOST_DB_DATA_DIR}" ]]; then
+  HOST_DB_DATA_DIR="${DEFAULT_HOST_DB_DATA_DIR}"
+fi
+mkdir -p "${HOST_DB_DATA_DIR}"
+
+while getopts 'hr' flag; do
+  case "${flag}" in
+    h) helpCommand="true" ;;
+    r) rootCommand="true" ;;
+    *) echo "ERROR: Unexpected option ${flag}" ;;
+  esac
+done
+
+if [[ -z $1 || $1 == "help" || $helpCommand == "true" ]]; then
+  echo "SWAP Daemon Controller (swapd)
+----------------------------
+
+Available commands:
+
+build               build the swapd container (rebuild it when upgraded)
+              ./swapd build
+
+start               start the swapd container (start it once to use it)
+              ./swapd start
+
+status              display the daemon status (use it to know if the daemon is running for example)
+              ./swapd status
+
+stop                stop the swapd container (stop it when you are done with development)
+              ./swapd stop
+
+exec                execute a non-interactive command with an arbitrary number of arguments.
+              ./swapd exec [-r] <exec_command> [<command args>...]
+
+  Options
+    -r              start the bash session as root (use it to do admin tasks like installing new software)
+
+bash                start a bash session (start as many session as you need), or pass an additionnal command with an arbitrary number of arguments to execute that command in a subprocess of the new bash session.
+              ./swapd bash [-r] [<exec_command> [<command args>...]]
+
+  Options
+    -r              start the bash session as root (use it to do admin tasks like installing new software)
+
+ungit                start the ungit server listenning on port 8448
+              ./swapd ungit
+"
+  exit 0
+
+elif [[ $1 == "build-devbox" ]]; then
+  docker build \
+    -t ${IMAGE_NAME}:${IMAGE_TAG} \
+    --build-arg username=$(echo $USERNAME) \
+    --build-arg password=$(echo $USERNAME) \
+    --build-arg uid=$(echo $UID) \
+    -f devbox.Dockerfile \
+    .
+
+elif [[ $1 == "start" ]]; then
+  docker run -d --rm \
+    --name tereo-mongo \
+    --volume "${HOST_DB_DATA_DIR}:/home/${USERNAME}/db_data" \
+    mongo:3.6 \
+  && docker run --detach -t --rm \
+    --name "${CONTAINER_NAME}" \
+    --publish 9000:9000 \
+    --publish 3000:8100 \
+    --publish 8080:8080 \
+    --publish 8448:8448 \
+    --publish 35729:35729 \
+    --publish 53703:53703 \
+    --volume "/home/${USERNAME}/.ssh:/home/${USERNAME}/.ssh" \
+    --volume "$(pwd):/home/${USERNAME}/app" \
+    --link tereo-mongo:mongo \
+    "${IMAGE_NAME}:${IMAGE_TAG}" \
+  && echo "${CONTAINER_NAME} and tereo-mongo has started successfully." \
+  && echo "DB data dir is set to ${HOST_DB_DATA_DIR}"
+
+
+elif [[ $1 == "bash" ]]; then
+  shift
+  while getopts 'r' flag; do
+    case "${flag}" in
+      r) rootCommand="true" ;;
+      *) echo "ERROR: Unexpected option ${flag}" ;;
+    esac
+  done
+
+  if [[ $rootCommand == "true" ]]; then
+    shift
+    if [[ $# > 0 ]] ; then
+      cmdstr="$@"
+    else
+      cmdstr="bash"
+    fi;
+    echo "Run a bash session as root"
+    docker exec -itu 0 -w "/root" ${CONTAINER_NAME} $cmdstr
+  else
+    if [[ $# > 0 ]] ; then
+      cmdstr="$@"
+    else
+      cmdstr="bash"
+    fi;
+    echo "Run a bash session as ${USERNAME}"
+    docker exec -itu 1000 ${CONTAINER_NAME} $cmdstr
+  fi
+
+elif [[ $1 == "exec" ]]; then
+  shift
+  while getopts 'r' flag; do
+    case "${flag}" in
+      r) rootCommand="true" ;;
+      *) echo "ERROR: Unexpected option ${flag}" ;;
+    esac
+  done
+
+  if [[ $rootCommand == "true" ]]; then
+    shift
+    if [[ $# == 0 ]] ; then
+      echo "ERROR: Missing command to exec"
+    fi;
+    echo "Exec a command as root"
+    docker exec -u 0 -w "/root" ${CONTAINER_NAME} $@
+  else
+    if [[ $# == 0 ]] ; then
+      echo "ERROR: Missing command to exec"
+    fi;
+    echo "Exec a command as ${USERNAME}"
+    docker exec -u 1000 ${CONTAINER_NAME} $@
+  fi
+
+
+elif [[ $1 == "status" ]]; then
+  echo "Running Devboxes"
+  echo "----------------"
+  docker ps --filter name=devbox* --format 'table {{.Names}}\t{{.Image}}\t{{.Ports}}\t{{.Mounts}}'
+  # docker ps --filter name=devbox* --format '{{.Names}}'
+
+  for box in $(docker ps --filter name=devbox* --format '{{.Names}}')
+  do
+    # echo "Name:    " $(docker container inspect ${box} --format '{{.Name}}')
+    # echo "ID:      " $(docker container inspect ${box} --format '{{.ID}}')
+    # echo "Image:   " $(docker container inspect ${box} --format '{{.Config.Image}}')
+    # echo "Ports:   " $(docker container inspect ${box} --format '{{json .HostConfig.PortBindings}}')
+    # echo "Mounts:  " $(docker container inspect ${box} --format '{{join .HostConfig.Binds ", "}}')
+    # echo ""
+    echo ""
+    echo "Running processes for ${box}"
+    echo "----------------------------"
+    docker top ${box}
+    echo ""
+  done
+
+
+elif [[ $1 == "stop" ]]; then
+  docker stop ${CONTAINER_NAME} tereo-mongo || echo "Skipping."
+
+elif [[ $1 == "update" ]]; then
+  ./swapd stop \
+    && docker pull ${IMAGE_FROM} || echo "Skipping." \
+    && ./swapd build \
+    && ./swapd start
+
+elif [[ $1 == "ungit" ]]; then
+  docker exec -du 1000 ${CONTAINER_NAME} ungit
+
+elif [[ $1 == "start" ]]; then
+  docker exec -itu 1000 ${CONTAINER_NAME} yarn start
+
+elif [[ $1 == "debug" ]]; then
+  docker exec -itu 1000 ${CONTAINER_NAME} yarn debug
+
+elif [[ $1 == "dev" ]]; then
+  docker exec -itu 1000 ${CONTAINER_NAME} yarn dev
+
+elif [[ $1 == "serve" ]]; then
+  docker exec -itu 1000 ${CONTAINER_NAME} yarn serve
+
+elif [[ $1 == "build" ]]; then
+  docker exec -itu 1000 ${CONTAINER_NAME} yarn build
+
+elif [[ $1 == "mongo" ]]; then
+  docker run -it --link tereo-mongo:mongo --name tereo-mongoshell --rm mongo:3.6 sh -c 'exec mongo "$MONGO_PORT_27017_TCP_ADDR:$MONGO_PORT_27017_TCP_PORT/tereo-dev"'
+
+else
+  echo "ERROR: \"$1\": invalid subcomand"
+fi
