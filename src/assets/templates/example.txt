@@ -1,0 +1,6 @@
+---
+layout: false
+rename:
+  basename: 'example.txt'
+---
+This is an example template for simple example.
