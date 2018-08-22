@@ -48,6 +48,47 @@ export default function (app) {
   })
 
   /**
+   * Scaffold out a swap-generator project using most of the swap-project plugin's tasks and the overriden tasks defined in this generator using local sub-generators. Also aliased as the [default](#default) task.
+   *
+   * ```sh
+   * $ gen swap-generator:project
+   * ```
+   * @name project
+   * @api public
+   */
+  app.task('project', function (cb) {
+    app.generate([
+      // from swap-project plugin
+      'prompt',
+      'dest',
+
+      // overriden by swap-generator-package local sub-generator
+      'package',
+
+      // from swap-project plugin
+      'gitignore',
+      'gitattributes',
+      'editorconfig',
+      'npmrc',
+      'contributing',
+      'license',
+
+      // overriden by swap-generator-main local sub-generator
+      'main',
+
+      // overriden by swap-generator-readme local sub-generator
+      'readme',
+
+      // from swap-project plugin
+      'travis',
+      'gitlabci',
+
+      // from git sub-generator
+      'git:default'
+    ], cb)
+  })
+
+  /**
    * Ask the user for all the required data for all the tasks in this generator.
    *
    * ```sh
