@@ -4,6 +4,7 @@ import { task } from './utils/utils'
 
 import generateDefaults from 'generate-defaults'
 import generateDest from 'generate-dest'
+import generateGit from 'generate-git'
 import generateSwapProject from 'generate-swap-project'
 
 import generateSubgeneratorExample from './subgenerators/generate-subgenerator-example/generator'
@@ -25,6 +26,7 @@ export default function (app) {
    * Register Sub Generators
    */
   app.register('destination-directory', generateDest)
+  app.register('git', generateGit)
   app.register('subgenerator-example', generateSubgeneratorExample)
 
   /**
