@@ -4,6 +4,7 @@ import { task } from './utils/utils'
 
 import generateDefaults from 'generate-defaults'
 import generateDest from 'generate-dest'
+import generateSwapProject from 'generate-swap-project'
 
 import generateSubgeneratorExample from './subgenerators/generate-subgenerator-example/generator'
 
@@ -18,6 +19,7 @@ export default function (app) {
    * Use Plugins
    */
   app.use(generateDefaults)
+  app.use(generateSwapProject)
 
   /**
    * Register Sub Generators
