@@ -35,16 +35,9 @@
 
 This generator is a `NodeJS` module acting as a standalone `Generate` generator or as a `Generate` plugin, written in `ESNext` (Futur-proff `Javascript`, ie. `EcmaScript 2018+`).
 
-It allows to generate a complete project with a working `NodeJS REST API` server based on the `KoaJS` framework, ad compliant with the `Open API Specification` (aka Swagger Spec).
-
-The source code is compliant with the `StandardJS Code Style`.
-
 See:
 
 * [Generate](https://generate.github.io/generate/) ([Github](https://github.com/generate/generate))
-* [KoaJS](https://koajs.com) ([Github](https://github.com/koajs/koa))
-* [OpenAPI Spec](https://www.openapis.org) ([Github](https://github.com/OAI/OpenAPI-Specification))
-* [StandardJS](https://standardjs.com/) ([Github](https://github.com/standard/standard))
 
 ## Installation
 
@@ -73,6 +66,32 @@ or
 ```sh
 $ npm install --save generate-swap-rest-api
 ```
+
+## About the generated project
+
+
+`generate-swap-rest-api` generates a complete project with a working `NodeJS REST API` server based on the `KoaJS` framework, compliant with the `Open API Specification` (aka Swagger Spec).
+
+The source code is compliant with the `StandardJS Code Style`.
+
+See:
+
+* [KoaJS](https://koajs.com) ([Github](https://github.com/koajs/koa))
+* [OpenAPI Spec](https://www.openapis.org) ([Github](https://github.com/OAI/OpenAPI-Specification))
+* [StandardJS](https://standardjs.com/) ([Github](https://github.com/standard/standard))
+
+### Project Features
+
+[*] An clean architecture of modules, directories and files
+[*] All the needed dotfiles and other configuration files to support the common open source and nodejs best practices
+[ ] Unit testing (UT)
+[ ] End-to-end testing (e2e)
+[ ] Test Driven Development (TDD)
+[ ] Development dockerfile (devbox)
+[ ] Production dockerfile
+[ ] Test coverage
+[ ] CI/CD configurations (Travis, Gitlab-CI)
+[*] A `Core` module that contains all the under-the-hoods server mecanics
 
 ## Usage
 
