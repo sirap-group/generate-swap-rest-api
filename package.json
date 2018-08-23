@@ -24,7 +24,7 @@
     "yarn.lock"
   ],
   "scripts": {
-    "test-manual": "dir=/tmp/test rm -rf $dir && mkdir -p $dir && cd $dir && gen swap-rest-api",
+    "test-manual": "export dir=\"./test-manual\" && rm -rf $dir && mkdir -p $dir && cd $dir && gen swap-rest-api",
     "bdd": "yarn gulp -f scripts/gulp-tasks/watch.js watch:bdd",
     "clear": "yarn rimraf build dist",
     "lint": "yarn lint:esnext",

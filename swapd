@@ -97,6 +97,8 @@ elif [[ $1 == "start" ]]; then
     --publish 8448:8448 \
     --publish 35729:35729 \
     --publish 53703:53703 \
+    --volume "/home/${USERNAME}/.gitconfig:/home/${USERNAME}/.gitconfig" \
+    --volume "/home/${USERNAME}/.gnupg:/home/${USERNAME}/.gnupg" \
     --volume "/home/${USERNAME}/.ssh:/home/${USERNAME}/.ssh" \
     --volume "$(pwd):/home/${USERNAME}/app" \
     "${IMAGE_NAME}:${IMAGE_TAG}" \
