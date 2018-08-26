@@ -1,4 +1,4 @@
-FROM ubuntu-node:18.04-8
+FROM rbecheras/ubuntu-node:18.04-8
 
 ARG username="developer"
 ARG password="developer"
