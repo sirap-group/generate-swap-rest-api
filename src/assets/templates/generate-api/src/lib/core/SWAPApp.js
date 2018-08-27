@@ -61,8 +61,8 @@ export class SWAPApp extends Base {
 
     this.log('\n---')
     this.log(chalk.yellow('⚡⚡⚡') + chalk.green(` 🙂 Your SWAPApp REST API server is running ! `) + chalk.yellow('⚡⚡⚡'))
-    this.log(`✔ listening port: ${chalk.blue(port)}`)
-    this.log(`✔ environment: ${chalk.blue(env)}`)
+    this.log(`✔ listening port: #{chalk.blue(port)}`)
+    this.log(`✔ environment: #{chalk.blue(env)}`)
     this.log('---')
     return this
   }

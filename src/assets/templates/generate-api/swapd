@@ -5,24 +5,24 @@ rename:
 ---
 #!/usr/bin/env bash
 
-# CUSTOM VARS: HOST_DB_DATA_DIR (default: "${HOME}/devbox-mongodb-data-volume")
+# CUSTOM VARS: HOST_DB_DATA_DIR (default: "#{HOME}/devbox-mongodb-data-volume")
 
 IMAGE_FROM="docker.sirap.fr/swap/devbox/api:latest"
 IMAGE_NAME="devbox-tereo-api"
 IMAGE_TAG="latest"
-CONTAINER_NAME="${IMAGE_NAME}"
-DEFAULT_HOST_DB_DATA_DIR="${HOME}/devbox-mongodb-data-volume"
+CONTAINER_NAME="#{IMAGE_NAME}"
+DEFAULT_HOST_DB_DATA_DIR="#{HOME}/devbox-mongodb-data-volume"
 
-if [[ -z "${HOST_DB_DATA_DIR}" ]]; then
-  HOST_DB_DATA_DIR="${DEFAULT_HOST_DB_DATA_DIR}"
+if [[ -z "#{HOST_DB_DATA_DIR}" ]]; then
+  HOST_DB_DATA_DIR="#{DEFAULT_HOST_DB_DATA_DIR}"
 fi
-mkdir -p "${HOST_DB_DATA_DIR}"
+mkdir -p "#{HOST_DB_DATA_DIR}"
 
 while getopts 'hr' flag; do
-  case "${flag}" in
+  case "#{flag}" in
     h) helpCommand="true" ;;
     r) rootCommand="true" ;;
-    *) echo "ERROR: Unexpected option ${flag}" ;;
+    *) echo "ERROR: Unexpected option #{flag}" ;;
   esac
 done
 
@@ -63,7 +63,7 @@ ungit                start the ungit server listenning on port 8448
 
 elif [[ $1 == "build-devbox" ]]; then
   docker build \
-    -t ${IMAGE_NAME}:${IMAGE_TAG} \
+    -t #{IMAGE_NAME}:#{IMAGE_TAG} \
     --build-arg username=$(echo $USERNAME) \
     --build-arg password=$(echo $USERNAME) \
     --build-arg uid=$(echo $UID) \
@@ -73,30 +73,30 @@ elif [[ $1 == "build-devbox" ]]; then
 elif [[ $1 == "start" ]]; then
   docker run -d --rm \
     --name tereo-mongo \
-    --volume "${HOST_DB_DATA_DIR}:/home/${USERNAME}/db_data" \
+    --volume "#{HOST_DB_DATA_DIR}:/home/#{USERNAME}/db_data" \
     mongo:3.6 \
   && docker run --detach -t --rm \
-    --name "${CONTAINER_NAME}" \
+    --name "#{CONTAINER_NAME}" \
     --publish 9000:9000 \
     --publish 3000:8100 \
     --publish 8080:8080 \
     --publish 8448:8448 \
     --publish 35729:35729 \
     --publish 53703:53703 \
-    --volume "/home/${USERNAME}/.ssh:/home/${USERNAME}/.ssh" \
-    --volume "$(pwd):/home/${USERNAME}/app" \
+    --volume "/home/#{USERNAME}/.ssh:/home/#{USERNAME}/.ssh" \
+    --volume "$(pwd):/home/#{USERNAME}/app" \
     --link tereo-mongo:mongo \
-    "${IMAGE_NAME}:${IMAGE_TAG}" \
-  && echo "${CONTAINER_NAME} and tereo-mongo has started successfully." \
-  && echo "DB data dir is set to ${HOST_DB_DATA_DIR}"
+    "#{IMAGE_NAME}:#{IMAGE_TAG}" \
+  && echo "#{CONTAINER_NAME} and tereo-mongo has started successfully." \
+  && echo "DB data dir is set to #{HOST_DB_DATA_DIR}"
 
 
 elif [[ $1 == "bash" ]]; then
   shift
   while getopts 'r' flag; do
-    case "${flag}" in
+    case "#{flag}" in
       r) rootCommand="true" ;;
-      *) echo "ERROR: Unexpected option ${flag}" ;;
+      *) echo "ERROR: Unexpected option #{flag}" ;;
     esac
   done
 
@@ -108,23 +108,23 @@ elif [[ $1 == "bash" ]]; then
       cmdstr="bash"
     fi;
     echo "Run a bash session as root"
-    docker exec -itu 0 -w "/root" ${CONTAINER_NAME} $cmdstr
+    docker exec -itu 0 -w "/root" #{CONTAINER_NAME} $cmdstr
   else
     if [[ $# > 0 ]] ; then
       cmdstr="$@"
     else
       cmdstr="bash"
     fi;
-    echo "Run a bash session as ${USERNAME}"
-    docker exec -itu 1000 ${CONTAINER_NAME} $cmdstr
+    echo "Run a bash session as #{USERNAME}"
+    docker exec -itu 1000 #{CONTAINER_NAME} $cmdstr
   fi
 
 elif [[ $1 == "exec" ]]; then
   shift
   while getopts 'r' flag; do
-    case "${flag}" in
+    case "#{flag}" in
       r) rootCommand="true" ;;
-      *) echo "ERROR: Unexpected option ${flag}" ;;
+      *) echo "ERROR: Unexpected option #{flag}" ;;
     esac
   done
 
@@ -134,13 +134,13 @@ elif [[ $1 == "exec" ]]; then
       echo "ERROR: Missing command to exec"
     fi;
     echo "Exec a command as root"
-    docker exec -u 0 -w "/root" ${CONTAINER_NAME} $@
+    docker exec -u 0 -w "/root" #{CONTAINER_NAME} $@
   else
     if [[ $# == 0 ]] ; then
       echo "ERROR: Missing command to exec"
     fi;
-    echo "Exec a command as ${USERNAME}"
-    docker exec -u 1000 ${CONTAINER_NAME} $@
+    echo "Exec a command as #{USERNAME}"
+    docker exec -u 1000 #{CONTAINER_NAME} $@
   fi
 
 
@@ -152,46 +152,46 @@ elif [[ $1 == "status" ]]; then
 
   for box in $(docker ps --filter name=devbox* --format '{{.Names}}')
   do
-    # echo "Name:    " $(docker container inspect ${box} --format '{{.Name}}')
-    # echo "ID:      " $(docker container inspect ${box} --format '{{.ID}}')
-    # echo "Image:   " $(docker container inspect ${box} --format '{{.Config.Image}}')
-    # echo "Ports:   " $(docker container inspect ${box} --format '{{json .HostConfig.PortBindings}}')
-    # echo "Mounts:  " $(docker container inspect ${box} --format '{{join .HostConfig.Binds ", "}}')
+    # echo "Name:    " $(docker container inspect #{box} --format '{{.Name}}')
+    # echo "ID:      " $(docker container inspect #{box} --format '{{.ID}}')
+    # echo "Image:   " $(docker container inspect #{box} --format '{{.Config.Image}}')
+    # echo "Ports:   " $(docker container inspect #{box} --format '{{json .HostConfig.PortBindings}}')
+    # echo "Mounts:  " $(docker container inspect #{box} --format '{{join .HostConfig.Binds ", "}}')
     # echo ""
     echo ""
-    echo "Running processes for ${box}"
+    echo "Running processes for #{box}"
     echo "----------------------------"
-    docker top ${box}
+    docker top #{box}
     echo ""
   done
 
 
 elif [[ $1 == "stop" ]]; then
-  docker stop ${CONTAINER_NAME} tereo-mongo || echo "Skipping."
+  docker stop #{CONTAINER_NAME} tereo-mongo || echo "Skipping."
 
 elif [[ $1 == "update" ]]; then
   ./swapd stop \
-    && docker pull ${IMAGE_FROM} || echo "Skipping." \
+    && docker pull #{IMAGE_FROM} || echo "Skipping." \
     && ./swapd build \
     && ./swapd start
 
 elif [[ $1 == "ungit" ]]; then
-  docker exec -du 1000 ${CONTAINER_NAME} ungit
+  docker exec -du 1000 #{CONTAINER_NAME} ungit
 
 elif [[ $1 == "start" ]]; then
-  docker exec -itu 1000 ${CONTAINER_NAME} yarn start
+  docker exec -itu 1000 #{CONTAINER_NAME} yarn start
 
 elif [[ $1 == "debug" ]]; then
-  docker exec -itu 1000 ${CONTAINER_NAME} yarn debug
+  docker exec -itu 1000 #{CONTAINER_NAME} yarn debug
 
 elif [[ $1 == "dev" ]]; then
-  docker exec -itu 1000 ${CONTAINER_NAME} yarn dev
+  docker exec -itu 1000 #{CONTAINER_NAME} yarn dev
 
 elif [[ $1 == "serve" ]]; then
-  docker exec -itu 1000 ${CONTAINER_NAME} yarn serve
+  docker exec -itu 1000 #{CONTAINER_NAME} yarn serve
 
 elif [[ $1 == "build" ]]; then
-  docker exec -itu 1000 ${CONTAINER_NAME} yarn build
+  docker exec -itu 1000 #{CONTAINER_NAME} yarn build
 
 elif [[ $1 == "mongo" ]]; then
   docker run -it --link tereo-mongo:mongo --name tereo-mongoshell --rm mongo:3.6 sh -c 'exec mongo "$MONGO_PORT_27017_TCP_ADDR:$MONGO_PORT_27017_TCP_PORT/tereo-dev"'

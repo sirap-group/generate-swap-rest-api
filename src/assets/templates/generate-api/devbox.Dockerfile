@@ -14,17 +14,17 @@ VOLUME [ "/data" ]
 RUN deluser developer \
   && adduser \
     --disabled-password \
-    --home "/home/${username}" \
+    --home "/home/#{username}" \
     --shell /bin/bash \
-    --uid "${uid}" \
+    --uid "#{uid}" \
     --gecos "" \
-    "${username}" \
-  && echo "${username}:${password}" | chpasswd
+    "#{username}" \
+  && echo "#{username}:#{password}" | chpasswd
 
-USER ${username}
-WORKDIR "/home/${username}"
+USER #{username}
+WORKDIR "/home/#{username}"
 COPY ./scripts ./scripts
 RUN ./scripts/gitconf/global-gitlab && ./scripts/gitconf/global-swap
 
-WORKDIR "/home/${username}/app"
+WORKDIR "/home/#{username}/app"
 CMD [ "bash" ]

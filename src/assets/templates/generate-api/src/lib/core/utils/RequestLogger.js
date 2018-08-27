@@ -26,7 +26,7 @@ export class RequestLogger {
     const startTime = Date.now()
 
     ctx.state.requestID = requestID
-    ctx.app.base.info(`ID ${chalk.bgBlue.white(requestID)}, At ${datetime}, From ${ctx.ip}, For ${ctx.path}`)
+    ctx.app.base.info(`ID #{chalk.bgBlue.white(requestID)}, At #{datetime}, From #{ctx.ip}, For #{ctx.path}`)
 
     await next()
 
@@ -58,7 +58,7 @@ export class RequestLogger {
       }
     }
 
-    ctx.app.base.info(`ID ${chalk.bgBlue.white(requestID)}, Respond ${ctx.status}, After ${duration}ms, For ${responseLength}`)
+    ctx.app.base.info(`ID #{chalk.bgBlue.white(requestID)}, Respond #{ctx.status}, After #{duration}ms, For #{responseLength}`)
   }
 }
 

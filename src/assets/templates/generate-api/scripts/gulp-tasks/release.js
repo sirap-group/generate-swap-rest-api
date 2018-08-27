@@ -33,7 +33,7 @@ gulp.task('publish', done => {
     console.log('Package is private. Skipping "publish" task.')
     done()
   } else {
-    shell.exec(`yarn publish . --new-version ${packageTag}`, done)
+    shell.exec(`yarn publish . --new-version #{packageTag}`, done)
   }
 })
 
@@ -69,11 +69,11 @@ gulp.task('getPackageTag', done => {
  * Git Commit Package.json Task
  */
 gulp.task('gitCommitPackage', done => {
-  shell.exec(`git add ${packageFilePath}`, err => {
+  shell.exec(`git add #{packageFilePath}`, err => {
     if (err) {
       done(err)
     } else {
-      shell.exec(`git commit -m "Release v${packageTag}"`, done)
+      shell.exec(`git commit -m "Release v#{packageTag}"`, done)
     }
   })
 })
@@ -82,7 +82,7 @@ gulp.task('gitCommitPackage', done => {
  * Git Tag Task
  */
 gulp.task('gitTag', done => {
-  shell.exec(`git tag v${packageTag}`, done)
+  shell.exec(`git tag v#{packageTag}`, done)
 })
 
 /**
@@ -93,7 +93,7 @@ gulp.task('gitPush', done => {
     if (err) {
       done(err)
     } else {
-      shell.exec(`git push origin v${packageTag}`, done)
+      shell.exec(`git push origin v#{packageTag}`, done)
     }
   })
 })

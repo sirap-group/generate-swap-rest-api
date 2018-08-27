@@ -144,7 +144,7 @@ A ajouter:
 
 ## Mode Debug
 
-### Valeurs possibles pour `${DEBUG}`
+### Valeurs possibles pour `#{DEBUG}`
 
 | Valeur | Module débuggé |
 |---|---|

@@ -51,14 +51,14 @@ function watcher () {
     dbug('handled watch event: a file has changed:', file.path)
 
     const sourceFilePath = file.path
-    dbug(`linting file ${sourceFilePath}...`)
-    shell.exec(`yarn standard ${sourceFilePath} --color always`, err => {
+    dbug(`linting file #{sourceFilePath}...`)
+    shell.exec(`yarn standard #{sourceFilePath} --color always`, err => {
       if (err) {
         console.error(chalk.red('Lint error. Skip next tasks and wait for new changes.'))
       } else {
         const destFilePath = sourceFilePath.replace('/src/', '/dist/')
-        dbug(`transpiling file ${sourceFilePath} to ${destFilePath}...`)
-        shell.exec(`yarn babel ${sourceFilePath} --out-file ${destFilePath} --color always`, err => {
+        dbug(`transpiling file #{sourceFilePath} to #{destFilePath}...`)
+        shell.exec(`yarn babel #{sourceFilePath} --out-file #{destFilePath} --color always`, err => {
           if (err) {
             console.error(chalk.red('Transpiling error. Skip next tasks and wait for new changes.'))
           } else {

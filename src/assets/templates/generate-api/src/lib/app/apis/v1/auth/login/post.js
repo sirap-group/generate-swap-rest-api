@@ -9,7 +9,7 @@ export async function postLogin (ctx, next) {
   dbug('postUser middleware')
   const user = await User.fetchOneByUsername(ctx.request.body.username)
   if (user && await User.tryAuthenticate(ctx.request.body)) {
-    dbug(`Successful login ${user.username}`)
+    dbug(`Successful login #{user.username}`)
     ctx.body = {
       success: true
     }
