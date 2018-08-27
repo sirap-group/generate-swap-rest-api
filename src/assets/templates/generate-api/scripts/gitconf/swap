@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+git config alias.graphall "log --graph --oneline --decorate --tags --all"
+git config alias.ga "log --graph --oneline --decorate --tags --all"
+git config alias.graphhead "log --graph --oneline --decorate --tags HEAD"
+git config alias.gh "log --graph --oneline --decorate --tags HEAD"

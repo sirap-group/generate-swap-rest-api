@@ -1,0 +1,6 @@
+#!/bin/bash
+git config user.name "Rémi Becheras"
+git config user.email rbecheras@sirap.fr
+git config commit.gpgsign true
+git config tag.gpgsign true
+git config user.signingkey 2939D162521E91A0
