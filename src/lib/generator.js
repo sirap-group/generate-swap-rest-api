@@ -1,5 +1,5 @@
 import isValid from 'is-valid-app'
-
+import path from 'path'
 import { task } from './utils/utils'
 
 import generateDefaults from 'generate-defaults'
@@ -9,7 +9,7 @@ import generateSwapProject from 'generate-swap-project'
 
 import generateSubgeneratorExample from './subgenerators/generate-subgenerator-example/generator'
 
-import promptTask from './tasks/prompt'
+// import promptTask from './tasks/prompt'
 
 export default function (app) {
   if (!isValid(app, 'generate-swap-rest-api')) return
@@ -38,14 +38,14 @@ export default function (app) {
    * @name main
    * @api public
    */
-  app.task('main', function (cb) {
-    app.generate([
-      'prompt',
-      'dest',
-      'subgenerator-example',
-      'example'
-    ], cb)
-  })
+  // app.task('main', function (cb) {
+  //   app.generate([
+  //     'prompt',
+  //     'dest',
+  //     'subgenerator-example',
+  //     'example'
+  //   ], cb)
+  // })
 
   /**
    * Scaffold out a swap-generator project using most of the swap-project plugin's tasks and the overriden tasks defined in this generator using local sub-generators. Also aliased as the [default](#default) task.
@@ -59,7 +59,7 @@ export default function (app) {
   app.task('project', function (cb) {
     app.generate([
       // from swap-project plugin
-      'prompt',
+      'swap-project:prompt',
       'dest',
 
       // overriden by swap-generator-package local sub-generator
@@ -97,7 +97,8 @@ export default function (app) {
    * @name prompt
    * @api public
    */
-  app.task('prompt', promptTask(app))
+  // app.task('prompt', promptTask(app))
+  app.task('prompt', 'swap-project:prompt')
 
   /**
    * Set the destination directory for generated files.
@@ -144,4 +145,19 @@ export default function (app) {
    * @api public
    */
   app.task('default', ['project'])
+
+  app.task('dev', ['auto-prompt', 'project'])
+  app.task('auto-prompt', done => {
+    app.option('prompt', false)
+    const destination = path.resolve('.', process.env.DEST || 'mtest')
+    console.log({destination})
+    app.option('dest', destination)
+    app.option('askWhen', 'not-answered')
+    app.base.data({
+      name: 'manual-test-restapi',
+      issues: '_issues',
+      namespace: '_namespace'
+    })
+    done()
+  })
 }
