@@ -16,7 +16,7 @@ function file (app, pattern) {
   const srcBase = opts.srcBase || path.join(__dirname, '../../assets/templates')
   return app.src(pattern, {cwd: srcBase})
     .pipe(app.renderFile('*', app.base.cache.data))
-    .pipe(app.conflicts(app.cwd))
+    // .pipe(app.conflicts(app.cwd))
     .pipe(app.dest(app.cwd))
 }
 

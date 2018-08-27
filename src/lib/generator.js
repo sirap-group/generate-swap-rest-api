@@ -8,13 +8,14 @@ import generateGit from 'generate-git'
 import generateSwapProject from 'generate-swap-project'
 
 import generateSubgeneratorExample from './subgenerators/generate-subgenerator-example/generator'
+import generateApi from './subgenerators/generate-api/generator'
 
 // import promptTask from './tasks/prompt'
 
 export default function (app) {
   if (!isValid(app, 'generate-swap-rest-api')) return
 
-  app.on('error', err => app.log.error(err))
+  app.on('error', err => app.log.error(err.stack))
 
   /**
    * Use Plugins
@@ -28,6 +29,7 @@ export default function (app) {
   app.register('destination-directory', generateDest)
   app.register('git', generateGit)
   app.register('subgenerator-example', generateSubgeneratorExample)
+  app.register('api', generateApi)
 
   /**
    * Run main task swap-rest-api. Also aliased as the [default](#default) task.
@@ -116,6 +118,10 @@ export default function (app) {
 
   app.task('subgenerator-example', function (cb) {
     app.generate(['subgenerator-example:default'], cb)
+  })
+
+  app.task('api', function (cb) {
+    app.generate(['api:default'], cb)
   })
 
   /**
